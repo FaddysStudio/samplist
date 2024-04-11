@@ -1,0 +1,35 @@
+instr channel
+
+iField = 4
+
+SName strget p ( iField )
+SChannel sprintf "channel/%s", SName
+iChannel chnget SChannel
+
+if iChannel == 0 then
+
+iChannel chnget "channel"
+iChannel += 1
+
+chnset iChannel, "channel"
+chnset iChannel, SChannel
+
+endif
+
+p4 = iChannel
+
+iField += 1
+iCount pcount
+
+while iField <= iCount do
+
+print p4
+
+SName strget p ( iField )
+o_set_i SName, p ( iField + 1 )
+
+iField += 2
+
+od
+
+endin

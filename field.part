@@ -1,0 +1,30 @@
+#define field(rate) #opcode o_get_$rate, $rate, S
+
+SName xin
+
+SField sprintf "%d/%s", p4, SName
+
+prints "%s\n", SField
+
+$rate.Value chnget SField
+
+xout $rate.Value
+
+endop
+
+opcode o_set_$rate, 0, S$rate
+
+SName, $rate.Value xin
+
+SField sprintf "%d/%s", p4, SName
+
+prints "%s\n", SField
+
+chnset $rate.Value, SField
+
+endop#
+
+$field(i)
+$field(k)
+$field(a)
+$field(S)
