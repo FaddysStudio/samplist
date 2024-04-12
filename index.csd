@@ -14,10 +14,10 @@ ksmps = 32
 nchnls = 2
 0dbfs = 1
 
-#include "field.part"
-#include "channel.part"
-#include "sampler.part"
-#include "sample.part"
+#include "design/field.part"
+#include "design/channel.part"
+#include "design/sampler.part"
+#include "design/sample.part"
 
 </CsInstruments>
 
@@ -27,7 +27,7 @@ t 0 90
 
 v 1
 
-#include "faddys2.sco"
+#include "score/faddys.part"
 
 i "out" 0 -1
 
