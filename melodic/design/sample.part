@@ -1,0 +1,59 @@
+instr synthesizer
+
+iNote = p5; frac ( p1 ) * 1000 % 128
+iFrequency = cpsmidinn ( iNote )
+
+aFrequency init iFrequency
+aClip jspline 1, 0, 4
+aSkew jspline 1, 0, 4
+
+aNote squinewave aFrequency, aClip, aSkew, 0
+
+aFilter jspline aFrequency, 0, 4
+
+aNote tone aNote, aFrequency
+
+aAmplitude jspline .5, 0, 4
+aAmplitude += .5
+
+aEnvelope linseg 0, 1/1024, 1, p3 - 1/1024, 0
+aAmplitude *= aEnvelope
+
+aNote clip aNote, 1, 1
+
+aNote *= aAmplitude * p6 / 127
+
+chnmix aNote, "left"
+chnmix aNote, "right"
+
+endin
+
+instr vco
+
+iAmplitude init p6 / 127
+iFrequency init cpsmidinn ( p5 )
+
+kAmplitude jspline iAmplitude / 2, 0, 4
+kAmplitude += iAmplitude / 2
+
+kFrequency jspline 5, 0, 4
+kFrequency = iFrequency * cent ( kFrequency )
+
+iWave o_get_i "wave"
+
+aNote vco2 kAmplitude, kFrequency, iWave
+
+kFilter jspline 2400, 0, 4
+kFilter = iFrequency * cent ( kFilter )
+aNote butterlp aNote, kFilter
+
+aEnvelope linseg 0, 1/1024, 1, p3 - 1/1024, 0
+
+aNote clip aNote, 1, 1
+
+aNote *= aEnvelope * p5 / 127
+
+chnmix aNote, "left"
+chnmix aNote, "right"
+
+endin

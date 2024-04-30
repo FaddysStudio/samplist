@@ -1,0 +1,46 @@
+instr sampler
+
+SInstrument strget p4
+iInstrument nstrnum SInstrument
+
+SName strget p5
+SChannel sprintf "channel/%s", SName
+iChannel chnget SChannel
+
+iFirst init p6
+iNote init iFirst
+iDelay init 0
+iDuration init p3
+iRest = iDuration / 4
+iVelocity = p7
+
+iCount = 12
+p3 = ( 1 + iCount + iRest ) * iDuration
+
+while iNote <= iFirst + iCount do
+
+iInstance = iNote / 1000
+
+schedule iInstrument + iInstance, iDelay, iDuration, iChannel, iNote, iVelocity
+
+iNote += 1
+iDelay += iDuration + iRest
+
+od
+
+endin
+
+instr out
+
+aLeft chnget "left"
+aRight chnget "right"
+
+aLeft clip aLeft, 1, 1
+aRight clip aRight, 1, 1
+
+outs aLeft/2, aRight/2
+
+chnclear "left"
+chnclear "right"
+
+endin
