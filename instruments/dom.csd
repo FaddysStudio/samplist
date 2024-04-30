@@ -2,13 +2,14 @@
 
 <CsOptions>
 
--odac
+-o dom.wav
+--format=24bit
 
 </CsOptions>
 
 <CsInstruments>
 
-sr = 44100
+sr = 48000
 ksmps = 32
 nchnls = 2
 0dbfs = 1
@@ -34,11 +35,15 @@ aHighSub poscil aHighSubAmplitude, aHighSubFrequency
 
 aNote += aHighSub / 2
 
+/*
+
 aTambourine tambourine 1, 1/128, 16, 1/2, 1
 
 aTambourine = aTambourine * .25
 
 aNote += aTambourine
+
+*/
 
 aGogobell gogobel 1, cpspch ( 6.05 ), .5, .5, giStrikeFT, 6.0, 0.3, giVibratoFT
 
@@ -54,6 +59,6 @@ endin
 
 <CsScore>
 
-i "dom" 0 1
+i "dom" ^+0 1
 
 </CsScore>

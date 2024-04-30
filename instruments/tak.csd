@@ -2,13 +2,14 @@
 
 <CsOptions>
 
--odac
+-o tak.wav
+--format=24bit
 
 </CsOptions>
 
 <CsInstruments>
 
-sr = 44100
+sr = 48000
 ksmps = 32
 nchnls = 2
 0dbfs = 1
@@ -27,11 +28,15 @@ aHighSub poscil aHighSubAmplitude, aHighSubFrequency
 
 aNote += aHighSub
 
+/*
+
 aTambourine tambourine 1, 1/128, 32, 1/4, 1
 
 aTambourine = aTambourine
 
 aNote += aTambourine
+
+*/
 
 aGogobell gogobel 1, cpspch ( 8.05 ), .5, .5, giStrikeFT, 6.0, 0.3, giVibratoFT
 
