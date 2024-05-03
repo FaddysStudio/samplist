@@ -1,0 +1,9 @@
+#define dom #1#
+#define tak #2#
+t 0 110
+v 4
+i $dom [0/8] 1
+i $tak [1/8] 1
+i $tak [3/8] 1
+i $dom [4/8] 1
+i $tak [6/8] 1
