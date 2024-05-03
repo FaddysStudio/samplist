@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 import { writeFile } from 'node:fs/promises';
 import { parse } from 'node:path';
 import { spawn } from 'node:child_process';
@@ -38,5 +40,3 @@ dir + '/faddys.orc',
 name
 
 ] );
-
-engine .on ( 'exit', () => console .log ( '#ready' ) );
