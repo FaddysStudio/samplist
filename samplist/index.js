@@ -1,42 +1,33 @@
 #!/usr/bin/env node
 
-import { writeFile } from 'node:fs/promises';
+import Scenarist from '@faddys/scenarist';
+import composer from './composer.js';
 import { parse } from 'node:path';
-import { spawn } from 'node:child_process';
 
-const { dir } = parse ( new URL ( import .meta .url ) .pathname );
-const { default: samples } = await import ( dir + '/samples.js' );
-const kit = samples .map ( ( sample, index ) => `#define ${ sample } #${ index + 1 }#` );
-const bank = samples .map ( sample => `strset $${ sample }, "${ dir }/../percussive/${ sample }.wav"` );
-const { play, rewind } = await import ( dir + '/player.js' );
-const orchestra = [];
+try {
 
-orchestra .push (
+await Scenarist ( new class Samplist {
 
-kit .join ( '\n' ),
-bank .join ( '\n' ),
-'instr ' + samples .map ( sample => `$${ sample }` ) .join ( ', ' ),
-play,
-'endin',
-rewind
+$_director = composer
 
-);
+path = parse ( new URL ( import .meta .url ) .pathname ) .dir;
 
-await writeFile ( dir + '/faddys.orc', orchestra .join ( '\n\n' ) );
+async $_producer ( $ ) {
 
-const { name, score } = await import ( dir + '/scorer.js' );
+await $ ( ... process .argv .slice ( 2 ) );
 
-await writeFile ( name, [
+}
 
-kit .join ( '\n' ),
-... score
+} );
 
-] .join ( '\n' ) );
+} catch ( reasons ) {
 
-const engine = await spawn ( 'csound', [
+console .error ( '@faddys/samplist: #error' );
 
-'-odac',
-dir + '/faddys.orc',
-name
+if ( reasons ?.forEach )
+reasons .forEach ( reason => console .error ( reason ) );
 
-] );
+else
+console .error ( reasons );
+
+}

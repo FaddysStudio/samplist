@@ -59,6 +59,6 @@ endin
 
 <CsScore>
 
-i "dom" ^+0 1
+i "dom" 0 1
 
 </CsScore>
