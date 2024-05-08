@@ -1,0 +1,52 @@
+sr = 48000
+ksmps = 48
+nchnls = 2
+0dbfs = 1
+
+instr $sampler
+
+SSample strget p4
+p3 filelen SSample
+aSample [] diskin2 SSample
+
+iTrack init frac ( p1 )
+STrack sprintf "track/%f", iTrack
+
+chnmix aSample [ 0 ], STrack
+
+endin
+
+instr $spatializer
+
+iTrack init frac ( p1 )
+STrack sprintf "track/%f", iTrack
+aSample chnget STrack
+
+aFrontLeft, aFrontRight, aRearLeft, aRearRight space aSample, 0, 0, kReverb, kX, kY
+aFrontLeftReverb, aFrontRightReverb, aRearLeftReverb, aRearRightReverb spsend
+
+aLeftReverb, aRightReverb freeverb aFrontLeftReverb + aRearLeftReverb, aFrontRightReverb + aRearRightReverb, kRoomSize, kDamp
+
+aLeft clip aFrontLeft + aRearLeft + aLeftReverb, 1, 0dbfs
+aRight clip aFrontRight + aRearRight + aRightReverb, 1, 0dbfs
+
+chnmix aLeft * iAmplitude, "out/1"
+chnmix aRight * iAmplitude, "out/2"
+
+endin
+
+instr 1, 2
+
+iChannel init int ( p1 )
+SChannel sprintf "out/%d", iChannel
+aChannel chnget SChannel
+
+outch iChannel, aChannel
+
+endin
+
+instr rewind
+
+rewindscore
+
+endin

@@ -22,8 +22,6 @@ await $ ( ... process .argv .slice ( 2 ) );
 
 } catch ( reasons ) {
 
-console .error ( '@faddys/samplist: #error' );
-
 if ( reasons ?.forEach )
 reasons .forEach ( reason => console .error ( reason ) );
 

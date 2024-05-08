@@ -1,5 +1,16 @@
+$ dom ~/studio/kit/dom
+
 tempo 110
 
-0/dom 2/tak 4/tak 6/tak
+0 dom
+2 tak
+4 tak 
+6 tak
 
-0/dom 1/tak 3/tak 4/dom 6/tak
+0 dom
+1 tak
+
+3 tak
+4 dom
+
+6 tak

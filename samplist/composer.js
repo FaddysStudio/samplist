@@ -10,6 +10,9 @@ path = parse ( new URL ( import .meta .url ) .pathname ) .dir
 name = 'faddys.sco' // `faddys_${ Date .now () }.notation`
 $name ( $, value ) { this .name = value }
 
+kit = {}
+section = []
+
 async $_producer ( $ ) {
 
 if ( process .argv .length !== 3 )
@@ -22,21 +25,30 @@ const error = await notation ( $$ ( 'error' ) );
 if ( error .length )
 throw error;
 
+const score = composer .score = await command ( `cat - > ${ composer .name }` );
 const output = await notation ( $$ ( 'output' ) );
-const score = await command ( `cat - > ${ composer .name }` );
-const sections = ( await Promise .all (
 
-output
-.map ( async section => await $ ( ... section .trim () .split ( /\s+/ ) ) )
+for ( const line of output )
+try {
 
-) );
+composer .index = ++composer .index || 1;
 
-await score (
+await $ ( ... line .trim () .split ( /\s+/ ) );
 
-sections .filter ( section => section ?.length )
-.join ( '\n\ns\n\n' ) + '\n\ne'
+} catch ( error ) {
 
-);
+command ( `rm ${ composer .name }` );
+score ( $$ ( 'end' ) );
+
+throw [
+
+`#error #line ${ composer .index }:
+${ line }`,
+... ( error instanceof Array ? error : [ error ] )
+
+];
+
+}
 
 await score ( $$ ( 'end' ) );
 
@@ -53,19 +65,30 @@ $length ( $, value ) { this .length = parseInt ( value ) }
 measure = 8
 $measure ( $, value ) { this .measure = parseInt ( value ) }
 
-index = 0
+track = 0
 
-async $_director ( $, ... notes ) {
+async $_director ( $, ... details ) {
 
-if ( ! notes .length )
+if ( ! details .length )
 return;
 
 const composer = this;
-const [ step, sample ] = notes .pop () .split ( '/' );
-const index = ++composer .index % 10 === 0 ? ++composer .index : composer .index;
+const step = parseFloat ( details .shift () );
 
-return `${ await $ ( ... notes ) || await $ ( $$ ( 'time' ) ) }
-i 1.${ index } [ ${ step }/${ composer .measure } ] 1 "${ composer .path }/../percussive/${ sample }.wav"`;
+if ( isNaN ( step ) || step < 0 || step >= composer .measure )
+throw [ 'Invalid step number:', step ];
+
+if ( ! details .length )
+throw [ 'The sample to be played at this step is missing.', `#step ${ step }` ];
+
+const sample = composer .kit [ details .shift () ];
+
+if ( ! sample )
+throw [ 'Sample not found.', `#sample ${ sample }` ];
+
+const track = ++composer .track % 10 === 0 ? ++composer .track : composer .track;
+
+section .push ( `i 1.${ track } [ ${ step }/${ composer .measure } ] 1 "${ sample }"` );
 
 }
 
