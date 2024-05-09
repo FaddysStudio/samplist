@@ -1,5 +1,5 @@
 import command from '@faddys/command';
-import { parse } from 'node:path';
+import { parse, resolve, normalize } from 'node:path';
 
 const $$ = Symbol .for;
 
@@ -19,16 +19,21 @@ if ( process .argv .length !== 3 )
 throw [ `Illegal number of arguments: ${ process .argv .length - 2 }` ];
 
 const composer = this;
-const notation = await command ( `cat ${ process .argv .pop () }` );
-const error = await notation ( $$ ( 'error' ) );
+const file = resolve ( process .cwd (), process .argv .pop () );
+const { notation, error } = await command ( `cat ${ file }` )
+.then ( async $ => ( {
+
+notation: await $ ( $$ ('output' ) ),
+error: await $ ( $$ ( 'error' ) )
+
+} ) );
 
 if ( error .length )
 throw error;
 
 const score = composer .score = await command ( `cat - > ${ composer .name }` );
-const output = await notation ( $$ ( 'output' ) );
 
-for ( const line of output )
+for ( const line of notation )
 try {
 
 composer .index = ++composer .index || 1;
@@ -42,8 +47,10 @@ score ( $$ ( 'end' ) );
 
 throw [
 
-`#error #line ${ composer .index }:
-${ line }`,
+`file://${ file }:${ composer .index }
+${ line }
+^^^
+`,
 ... ( error instanceof Array ? error : [ error ] )
 
 ];
@@ -88,7 +95,42 @@ throw [ 'Sample not found.', `#sample ${ sample }` ];
 
 const track = ++composer .track % 10 === 0 ? ++composer .track : composer .track;
 
-section .push ( `i 1.${ track } [ ${ step }/${ composer .measure } ] 1 "${ sample }"` );
+composer .section .push ( `i 1.${ track } [ ${ step }/${ composer .measure } ] 1 "${ sample }"` );
+
+}
+
+async $$ ( $, name, ... paths ) {
+
+const composer = this;
+
+if ( ! paths .length ) {
+
+if ( ! composer .kit [ name ] ?.length )
+throw 'Empty kit';
+
+else
+return console .log ( composer .kit [ name ] .join ( '\n' ) );
+
+}
+
+const path = paths .shift ();
+const directory = await command ( `ls ${ path }` );
+const list = await directory ( $$ ( 'output' ) );
+const kit = composer .kit [ name ] = composer .kit [ name ] || [];
+
+for ( let sample of list ) {
+
+sample = `${ path }/${ sample }`;
+
+const info = await command ( `file --brief --mime-type ${ sample }` );
+const [ type ] = await info ( $$ ( 'output' ) );
+
+if ( type .startsWith ( 'audio' ) )
+kit .push ( sample )
+
+}
+
+await $ ( '$', name, ... paths );
 
 }
 
