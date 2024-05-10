@@ -33,23 +33,27 @@ throw error;
 
 const score = composer .score = await command ( `cat - > ${ composer .name }` );
 
-for ( const line of notation )
+for ( let line of notation )
 try {
 
 composer .index = ++composer .index || 1;
+composer .order = [];
 
-await $ ( ... line .trim () .split ( /\s+/ ) );
+await $ ( ... line = line .trim () .split ( /\s+/ ) );
 
 } catch ( error ) {
 
 command ( `rm ${ composer .name }` );
 score ( $$ ( 'end' ) );
 
+const position = composer .order .map ( direction => ( typeof direction === 'string' ? direction .length : `${ direction }` .length ) )
+.reduce ( ( position, length ) => ( position + length + 1 ), 0 );
+
 throw [
 
 `file://${ file }:${ composer .index }
-${ line }
-^^^
+${ line .join ( ' ' ) }
+${ ' ' .repeat ( position ) }^^^
 `,
 ... ( error instanceof Array ? error : [ error ] )
 
@@ -80,22 +84,25 @@ if ( ! details .length )
 return;
 
 const composer = this;
-const step = parseFloat ( details .shift () );
+let step = details .shift ();
 
-if ( isNaN ( step ) || step < 0 || step >= composer .measure )
+if ( isNaN ( parseFloat ( step ) ) || ( step = parseFloat ( step ) ) < 0 || step >= composer .measure )
 throw [ 'Invalid step number:', step ];
 
 if ( ! details .length )
 throw [ 'The sample to be played at this step is missing.', `#step ${ step }` ];
 
-const sample = composer .kit [ details .shift () ];
+composer .order .push ( step );
 
-if ( ! sample )
-throw [ 'Sample not found.', `#sample ${ sample }` ];
+const name = details .shift ();
+const kit = composer .kit [ name ];
+
+if ( ! kit )
+throw [ `Kit not found '${ name }'.` ];
 
 const track = ++composer .track % 10 === 0 ? ++composer .track : composer .track;
 
-composer .section .push ( `i 1.${ track } [ ${ step }/${ composer .measure } ] 1 "${ sample }"` );
+composer .section .push ( `i 1.${ track } [ ${ step }/${ composer .measure } ] 1 "${ kit }"` );
 
 }
 
@@ -109,7 +116,7 @@ if ( ! composer .kit [ name ] ?.length )
 throw 'Empty kit';
 
 else
-return console .log ( composer .kit [ name ] .join ( '\n' ) );
+return;
 
 }
 
